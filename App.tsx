@@ -16,8 +16,8 @@ export default function App() {
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Notes">
-          <Stack.Screen name="Notes" component={NotesScreen} options={{ headerTitleStyle: { fontSize: 30, fontWeight: 'bold'} }} />
-          <Stack.Screen name="EditNote" component={EditNoteScreen} options={{ title: 'Edit Note'}} />
+          <Stack.Screen name="Notes" component={NotesScreen} options={{ headerStyle: { backgroundColor: '#a4cce3' }, headerTintColor: '#37667e', headerTitleStyle: { fontSize: 30, fontWeight: 'bold'} }} />
+          <Stack.Screen name="EditNote" component={EditNoteScreen} options={{ title: 'Note', headerStyle: { backgroundColor: '#a4cce3' }, headerTintColor: '#37667e'}} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar />

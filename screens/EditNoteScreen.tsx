@@ -45,13 +45,21 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
     }
   };
 
-  const saveAndExit = () => {
+  const saveNoteAndExit = () => {
     if(noteId.length > 0){
-      const updatedNotes = notes.map((val) => val.id === noteId ? {id: val.id, note: note} : val)
+      const updatedNotes = notes.map((val) => val.id === noteId ? {id: val.id, note: note} : val);
       storeData(updatedNotes);
     }else{
       const noteItem: NoteItem = { id: uuidv4(), note: note};
-      storeData([...notes, noteItem]);
+      storeData([noteItem, ...notes]);
+    }
+    navigation.goBack();
+  };
+
+  const deleteNote = () => {
+    if(noteId.length > 0){
+      const updatedNotes = notes.filter((val) => val.id !== noteId);
+      storeData(updatedNotes);
     }
     navigation.goBack();
   };
@@ -68,12 +76,13 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
           defaultValue={note}
         />
       </ScrollView>
+      {err.length > 0 && <Text>{err}</Text>}
       <View style={styles.footer}>
-        <Pressable onPress={() => navigation.navigate('EditNote', { noteId: ''})}>
-          <AntDesign name="delete" size={24} color="black" />
+        <Pressable onPress={() => deleteNote()}>
+          <AntDesign name="delete" size={24} color="#dec4d6" />
         </Pressable>        
-        <Pressable onPress={() => saveAndExit()}>
-          <AntDesign name="save" size={24} color="black" />
+        <Pressable onPress={() => saveNoteAndExit()}>
+          <AntDesign name="save" size={24} color="#37667e" />
         </Pressable>
       </View>
     </View>
@@ -83,7 +92,7 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f1f6',
     padding: 20
   },
   footer: {

@@ -2,14 +2,13 @@ import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; 
 import { NoteItem, RootStackParamList } from '../types';
-import { v4 as uuidv4 } from 'uuid';
 import { StackScreenProps } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NotesScreen({navigation} : StackScreenProps<RootStackParamList, 'Notes'>) {
   
-  const init: NoteItem[] =[];
-  const [notes, setNotes] = React.useState(init);
+  const emptyArray: NoteItem[] =[];
+  const [notes, setNotes] = React.useState(emptyArray);
   const [err, setErr] = React.useState('');
 
   const initializeData = async () => {
@@ -28,30 +27,41 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
 
   const clearAll = async () => {
     try {
-      await AsyncStorage.clear()
+      await AsyncStorage.clear();
     } catch(e) {
-      // clear error
+      const errorMessage = (e as Error).message
+      setErr('Error occured during data removal: ' + errorMessage);
     }
-  
-    console.log('Done.')
+    setNotes(emptyArray);
   };
 
-  React.useEffect(() => {initializeData()}, []);
+  React.useEffect(() => {
+    return navigation.addListener('focus', () => {
+      initializeData();
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
       <View style={styles.addNoteSign}>
         <Pressable onPress={() => navigation.navigate('EditNote', { noteId: ''})}>
-          <AntDesign name="plus" size={24} color="black" />
+          <AntDesign name="plus" size={24} color="#37667e" />
         </Pressable>
       </View>
       <FlatList 
         data={notes}
-        renderItem={({item}) => <Text>{item.note}</Text>}>
+        renderItem={({item}) => (
+          <Pressable style={styles.noteItem} onPress={() => navigation.navigate('EditNote', { noteId: item.id})}>
+            <Text>{item.note}</Text>
+          </Pressable>
+        )}>
       </FlatList>
-      <View>
+      {err.length > 0 && <Text>{err}</Text>}
+      <View style={styles.footer}>
           <Text>{JSON.stringify(notes.length) + ' Notes'}</Text>
-          {err.length > 0 && <Text>{err}</Text>}
+          <Pressable onPress={() => clearAll()}>
+            <Text>Clear All</Text>
+          </Pressable>
       </View>
     </View>
   );
@@ -60,10 +70,17 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f1f6',
     padding: 20
   },
   addNoteSign: {
     flexDirection: "row-reverse"
+  },
+  noteItem: {
+    height: 20
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });
