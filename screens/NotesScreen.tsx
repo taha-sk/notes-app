@@ -14,25 +14,26 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
   const initializeData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@notes');
-      console.log(jsonValue);
       if(jsonValue != null){
         const storedNotes: NoteItem[] = JSON.parse(jsonValue);
         setNotes(storedNotes);
       }
     } catch(e) {
       const errorMessage = (e as Error).message
-      setErr('Error occured during data initialization: ' + errorMessage);
+      setErr('Error occured during data initialization. Please restart the application and try again. Error detail: ' + errorMessage);
     }
   };
 
   const clearAll = async () => {
-    try {
-      await AsyncStorage.clear();
-    } catch(e) {
-      const errorMessage = (e as Error).message
-      setErr('Error occured during data removal: ' + errorMessage);
+    if (notes.length > 0) {
+      try {
+        await AsyncStorage.clear();
+      } catch(e) {
+        const errorMessage = (e as Error).message
+        setErr('Error occured during data removal. Please restart the application and try again. Error detail: ' + errorMessage);
+      }
+      setNotes(emptyArray);
     }
-    setNotes(emptyArray);
   };
 
   React.useEffect(() => {
@@ -45,21 +46,31 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
     <View style={styles.container}>
       <View style={styles.addNoteSign}>
         <Pressable onPress={() => navigation.navigate('EditNote', { noteId: ''})}>
-          <AntDesign name="plus" size={24} color="#37667e" />
+          <AntDesign name="plus" size={30} color="#37667e" />
         </Pressable>
       </View>
       <FlatList 
         data={notes}
         renderItem={({item}) => (
-          <Pressable style={styles.noteItem} onPress={() => navigation.navigate('EditNote', { noteId: item.id})}>
-            <Text>{item.note}</Text>
+          <Pressable 
+          style={({ pressed }) => [ {
+            backgroundColor: pressed
+              ? '#b8e0f6'
+              : '#f0f1f6'
+          }, { borderBottomWidth: 1, padding: 5, borderColor: '#7b92aa'}]} 
+          onPress={() => navigation.navigate('EditNote', { noteId: item.id})}>
+            <Text style={styles.noteItem}>{item.note}</Text>
           </Pressable>
         )}>
       </FlatList>
       {err.length > 0 && <Text>{err}</Text>}
       <View style={styles.footer}>
           <Text>{JSON.stringify(notes.length) + ' Notes'}</Text>
-          <Pressable onPress={() => clearAll()}>
+          <Pressable style={({ pressed }) => [ {
+            backgroundColor: pressed
+              ? '#b8e0f6'
+              : '#f0f1f6'
+          }, {height: 20}]}  onPress={() => clearAll()}>
             <Text>Clear All</Text>
           </Pressable>
       </View>
@@ -77,7 +88,9 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse"
   },
   noteItem: {
-    height: 20
+    height: 50,
+    fontSize: 20,
+    color: '#37667e'
   },
   footer: {
     flexDirection: 'row',
