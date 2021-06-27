@@ -4,12 +4,12 @@ import { AntDesign } from '@expo/vector-icons';
 import { NoteItem, RootStackParamList } from '../types';
 import { StackScreenProps } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from 'sentry-expo';
 
 export default function NotesScreen({navigation} : StackScreenProps<RootStackParamList, 'Notes'>) {
   
   const emptyArray: NoteItem[] =[];
   const [notes, setNotes] = React.useState(emptyArray);
-  const [err, setErr] = React.useState('');
 
   const initializeData = async () => {
     try {
@@ -19,8 +19,8 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
         setNotes(storedNotes);
       }
     } catch(e) {
-      const errorMessage = (e as Error).message
-      setErr('Error occured during data initialization. Please restart the application and try again. Error detail: ' + errorMessage);
+      // Catch error and resolve
+      Sentry.Native.captureException(e);
     }
   };
 
@@ -29,8 +29,8 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
       try {
         await AsyncStorage.clear();
       } catch(e) {
-        const errorMessage = (e as Error).message
-        setErr('Error occured during data removal. Please restart the application and try again. Error detail: ' + errorMessage);
+        // Catch error and resolve
+        Sentry.Native.captureException(e);
       }
       setNotes(emptyArray);
     }
@@ -45,7 +45,7 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
   return (
     <View style={styles.container}>
       <View style={styles.addNoteSign}>
-        <Pressable onPress={() => navigation.navigate('EditNote', { noteId: ''})}>
+        <Pressable testID="add-btn" onPress={() => navigation.navigate('EditNote', { noteId: ''})}>
           <AntDesign name="plus" size={30} color="#37667e" />
         </Pressable>
       </View>
@@ -63,7 +63,6 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
           </Pressable>
         )}>
       </FlatList>
-      {err.length > 0 && <Text>{err}</Text>}
       <View style={styles.footer}>
           <Text>{JSON.stringify(notes.length) + ' Notes'}</Text>
           <Pressable style={({ pressed }) => [ {

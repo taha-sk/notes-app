@@ -8,6 +8,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import NotesScreen from './screens/NotesScreen';
 import EditNoteScreen from './screens/EditNoteScreen';
+import * as Sentry from 'sentry-expo';
+
+Sentry.init({
+  dsn: '<dsn>',
+  enableInExpoDevelopment: true,
+  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
+});
 
 const Stack = createStackNavigator<RootStackParamList>();
 

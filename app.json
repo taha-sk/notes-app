@@ -27,6 +27,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "taha-sukru-karabacakoglu",
+            "project": "notes-app",
+            "authToken": "<auth token>"
+          }
+        }
+      ]
     }
   }
 }

@@ -1,10 +1,11 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { ScrollView, StyleSheet, TextInput, View, Text, Pressable } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View, Pressable } from 'react-native';
 import { NoteItem, RootStackParamList } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from 'sentry-expo'; 
 
 export default function EditNoteScreen({navigation, route} : StackScreenProps<RootStackParamList, 'EditNote'>) {
   
@@ -14,7 +15,6 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
   const [notes, setNotes] = React.useState(init);
 
   const [note, setNote] = React.useState('');
-  const [err, setErr] = React.useState('');
 
   const initializeData = async () => {
     try {
@@ -30,8 +30,7 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
         }
       }
     } catch(e) {
-      const errorMessage = (e as Error).message
-      setErr('Error occured during data initialization. Please restart the application and try again. Error detail: ' + errorMessage);
+      Sentry.Native.captureException(e);
     }
   };
 
@@ -40,8 +39,7 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
       const jsonValue = JSON.stringify(value)
       await AsyncStorage.setItem('@notes', jsonValue)
     } catch (e) {
-      const errorMessage = (e as Error).message
-      setErr('Error occured during data save. Please restart the application and try again. Error detail: ' + errorMessage);
+      Sentry.Native.captureException(e);
     }
   };
 
@@ -79,12 +77,11 @@ export default function EditNoteScreen({navigation, route} : StackScreenProps<Ro
           defaultValue={note}
         />
       </ScrollView>
-      {err.length > 0 && <Text>{err}</Text>}
       <View style={styles.footer}>
-        <Pressable onPress={() => deleteNote()}>
+        <Pressable testID="delete-btn" onPress={() => deleteNote()}>
           <AntDesign name="delete" size={30} color="#dec4d6" />
         </Pressable>        
-        <Pressable onPress={() => saveNoteAndExit()}>
+        <Pressable testID="save-btn" onPress={() => saveNoteAndExit()}>
           <AntDesign name="save" size={30} color="#37667e" />
         </Pressable>
       </View>

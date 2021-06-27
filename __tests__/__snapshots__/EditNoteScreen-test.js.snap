@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<EditNoteScreen /> renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "#f0f1f6",
+      "flex": 1,
+      "padding": 20,
+    }
+  }
+>
+  <RCTScrollView>
+    <View>
+      <TextInput
+        allowFontScaling={true}
+        defaultValue=""
+        multiline={true}
+        onChangeText={[Function]}
+        placeholder="Type here to add your note!"
+        rejectResponderTermination={true}
+        style={
+          Object {
+            "fontSize": 20,
+            "height": 275,
+          }
+        }
+        underlineColorAndroid="transparent"
+      />
+    </View>
+  </RCTScrollView>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "justifyContent": "space-evenly",
+      }
+    }
+  >
+    <View
+      accessible={true}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      testID="delete-btn"
+    >
+      <Text />
+    </View>
+    <View
+      accessible={true}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      testID="save-btn"
+    >
+      <Text />
+    </View>
+  </View>
+</View>
+`;
