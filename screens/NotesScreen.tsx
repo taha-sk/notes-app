@@ -3,8 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; 
 import { NoteItem, RootStackParamList } from '../types';
 import { StackScreenProps } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Sentry from 'sentry-expo';
+import NotesStorage from "../NotesStorage";
 
 export default function NotesScreen({navigation} : StackScreenProps<RootStackParamList, 'Notes'>) {
   
@@ -12,26 +11,13 @@ export default function NotesScreen({navigation} : StackScreenProps<RootStackPar
   const [notes, setNotes] = React.useState(emptyArray);
 
   const initializeData = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem('@notes');
-      if(jsonValue != null){
-        const storedNotes: NoteItem[] = JSON.parse(jsonValue);
-        setNotes(storedNotes);
-      }
-    } catch(e) {
-      // Catch error and resolve
-      Sentry.Native.captureException(e);
-    }
+    const storedNotes: NoteItem[] = await NotesStorage.getNotes();
+    setNotes(storedNotes);
   };
 
   const clearAll = async () => {
     if (notes.length > 0) {
-      try {
-        await AsyncStorage.clear();
-      } catch(e) {
-        // Catch error and resolve
-        Sentry.Native.captureException(e);
-      }
+      await NotesStorage.clearNotes();
       setNotes(emptyArray);
     }
   };
